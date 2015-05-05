@@ -1,0 +1,13 @@
+*swp
+~*
+*.gz
+*.tgz
+*.backup
+*.log
+*.sqlite
+*.db
+www/
+json/
+geojson/
+topojson/
+node_modules/
