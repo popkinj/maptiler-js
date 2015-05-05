@@ -1,0 +1,24 @@
+{
+  "name": "stash",
+  "version": "1.0.0",
+  "description": "Calculate tiles required for a web map.",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@littleearth.ca:stash"
+  },
+  "author": "Jamie Popkin",
+  "license": "ISC",
+  "devDependencies": {
+    "LiveScript": "^1.3.1",
+    "gulp": "^3.8.11",
+    "gulp-livereload": "^3.8.0",
+    "gulp-watch": "^4.2.4"
+  }
+}
