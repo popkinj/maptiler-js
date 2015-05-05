@@ -6,7 +6,7 @@
 *.log
 *.sqlite
 *.db
-www/
+dist/
 json/
 geojson/
 topojson/
