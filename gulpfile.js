@@ -1,5 +1,6 @@
 var gulp = require("gulp"),
     watch = require("gulp-watch"),
+    livereload = require("gulp-livereload"),
     livescript = require("gulp-livescript");
 
 
@@ -8,15 +9,17 @@ var gulp = require("gulp"),
  * Watch files for changes then build.
  */
 gulp.task("default", function () {
-  watch('lib/ly/stash.ly', function () {
-    return gulp.src('lib/ly/stash.ly').
+  livereload.listen();
+  watch('lib/ls/maptiler.ls', function () {
+    return gulp.src('lib/ls/maptiler.ls').
       pipe(livescript({bare: true})).
-      pipe(gulp.dest("dist/"));
+      pipe(gulp.dest("dist/")).
+      pipe(livereload());
   });
 });
 
 gulp.task("deploy", function () {
-  return gulp.src('lib/ly/maptiler.ly').
+  return gulp.src('lib/ls/maptiler.ls').
     pipe(livescript({bare: true})).
     pipe(gulp.dest("./"));
 });
