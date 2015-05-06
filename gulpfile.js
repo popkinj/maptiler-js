@@ -14,3 +14,9 @@ gulp.task("default", function () {
       pipe(gulp.dest("dist/"));
   });
 });
+
+gulp.task("deploy", function () {
+  return gulp.src('lib/ly/maptiler.ly').
+    pipe(livescript({bare: true})).
+    pipe(gulp.dest("./"));
+});
