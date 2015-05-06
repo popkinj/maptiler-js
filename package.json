@@ -21,6 +21,7 @@
     "gulp": "^3.8.11",
     "gulp-livereload": "^3.8.0",
     "gulp-livescript": "^2.3.0",
+    "gulp-plumber": "^1.0.0",
     "gulp-watch": "^4.2.4"
   }
 }

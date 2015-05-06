@@ -1,5 +1,6 @@
 var gulp = require("gulp"),
     watch = require("gulp-watch"),
+    plumber = require("gulp-plumber"),
     livereload = require("gulp-livereload"),
     livescript = require("gulp-livescript");
 
@@ -12,6 +13,7 @@ gulp.task("default", function () {
   livereload.listen();
   watch('lib/ls/maptiler.ls', function () {
     return gulp.src('lib/ls/maptiler.ls').
+      pipe(plumber()).
       pipe(livescript({bare: true})).
       pipe(gulp.dest("dist/")).
       pipe(livereload());
