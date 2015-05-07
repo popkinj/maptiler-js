@@ -201,8 +201,12 @@ class GlobalMercator(object):
 		"Converts EPSG:900913 to pyramid pixel coordinates in given zoom level"
 				
 		res = self.Resolution( zoom )
+                print "zoom: ",zoom
+                print "res: ",res
 		px = (mx + self.originShift) / res
 		py = (my + self.originShift) / res
+                print "px ",px
+                print "py ",py
 		return px, py
 	
 	def PixelsToTile(self, px, py):
@@ -330,10 +334,10 @@ class GlobalGeodetic(object):
 		ty = int( math.ceil( py / float(self.tileSize) ) - 1 )
 		return tx, ty
 
-	def Resolution(self, zoom ):
-		"Resolution (arc/pixel) for given zoom level (measured at Equator)"
-		
-		return 180 / 256.0 / 2**zoom
+	# def Resolution(self, zoom ):
+	# 	"Resolution (arc/pixel) for given zoom level (measured at Equator)"
+	# 	
+	# 	return 180 / 256.0 / 2**zoom
 		#return 180 / float( 1 << (8+zoom) )
 
 	def TileBounds(tx, ty, zoom):
@@ -409,6 +413,8 @@ if __name__ == "__main__":
 	mercator = GlobalMercator()
 
 	mx, my = mercator.LatLonToMeters( lat, lon )
+        print "mx ",mx
+        print "my ",my
 	print "Spherical Mercator (ESPG:900913) coordinates for lat/lon: "
 	print (mx, my)
 	tminx, tminy = mercator.MetersToTile( mx, my, tz )
@@ -421,11 +427,15 @@ if __name__ == "__main__":
 	else:
 		tmaxx, tmaxy = tminx, tminy
 		
+        print "tminx ",tminx
+        print "tminy ",tminy
+        print "tmaxx ",tmaxx
+        print "tmaxy ",tmaxy
 	for ty in range(tminy, tmaxy+1):
 		for tx in range(tminx, tmaxx+1):
 			tilefilename = "%s/%s/%s" % (tz, tx, ty)
 			print tilefilename, "( TileMapService: z / x / y )"
-		
+
 			gx, gy = mercator.GoogleTile(tx, ty, tz)
 			print "\tGoogle:", gx, gy
 			quadkey = mercator.QuadTree(tx, ty, tz)

@@ -21,7 +21,8 @@ maptiler =
       )
     [lat, lon]
 
-  res: -> 180 / @tileSize / Math.pow(2,it)
+  # res: -> 180 / @tileSize / Math.pow(2,it) # Don't know why this is here.
+  res: -> @initialResolution / Math.pow(2,it)
 
   pixelsToMeters: (x,y,z) ->
     [
@@ -30,6 +31,11 @@ maptiler =
     ]
 
   metersToPixels: (x,y,z) ->
+    px = (x + @originShift) / @res(z)
+    py = (y + @originShift) / @res(z)
+    # console.log "px: #px  py: #py"
+    # console.log "z: #z"
+    # console.log "@res: #{@res(z)}"
     [
       (x + @originShift) / @res(z)
       (y + @originShift) / @res(z)
@@ -73,11 +79,21 @@ maptiler =
 
   getTiles: (left,bottom,right,top,zoom) ->
     mercPos1 = @latLonToMeters left,bottom
-    console.log mercPos1
+    # console.log "mx #{mercPos1[0]}"
+    # console.log "my #{mercPos1[1]}"
+    # console.log mercPos1
     mercPos2 = @latLonToMeters right,top
-    console.log mercPos2
+    # console.log mercPos2
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
+    # console.log tilePos1
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
+    # console.log tilePos2
+
+    for ty from tilePos1[1] to tilePos2[1]
+      for tx from tilePos1[0] to tilePos2[0]
+        console.log "#zoom/#tx/#ty"
+    # console.log "done"
+    #   console.log ty
 
 
 
@@ -89,4 +105,7 @@ maptiler =
 # console.log maptiler.zoomForPixelSize 4
 # maptiler.quadTree(1,1,7)
 # console.log 0 to 30
-bnd = [[177.13846,-38.03898],[177.26629,-37.99240]]
+
+# This is the bottom of the Bay of Plenty
+b = [[177.13846,-38.03898],[177.26629,-37.99240]]
+maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
