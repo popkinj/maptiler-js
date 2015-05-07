@@ -49,6 +49,8 @@ maptiler =
 
 
 
+# Should equal -13692297.3675727 6800125.45439731. Taken from testing postgis
 console.log maptiler.latLonToMeters -123, 52
+
 console.log maptiler.metersToLatLon -13692297.367572648, 6800125.454397306
 console.log maptiler.metersToTile -13692297.367572648, 6800125.454397306, 15
