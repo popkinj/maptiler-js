@@ -11,7 +11,8 @@ var gulp = require("gulp"),
  */
 gulp.task("default", function () {
   livereload.listen();
-  watch('lib/ls/maptiler.ls', function () {
+  watch('lib/ls/*.ls', function () {
+    console.log("reload");
     return gulp.src('lib/ls/maptiler.ls').
       pipe(plumber()).
       pipe(livescript({bare: true})).

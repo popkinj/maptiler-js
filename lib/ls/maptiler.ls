@@ -63,10 +63,21 @@ maptiler =
 
   quadTree: (x,y,z) ->
     y = (Math.pow(2,z) - 1) - y
-# XXX: Check to make sure I should use 'to' and not 'til'
-    for i from z to 0 by -1
-      console.log i
+    quadKey = ''
+    for i from z til 0 by -1
+      digit = 0
+      mask = 1 .<<. (i - 1)
+      digit += 1 if x is not 0 and x is not 0
+      digit += 2 if y is not 0 and y is not 0
+    digit
 
+  getTiles: (left,bottom,right,top,zoom) ->
+    mercPos1 = @latLonToMeters left,bottom
+    console.log mercPos1
+    mercPos2 = @latLonToMeters right,top
+    console.log mercPos2
+    tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
+    tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
 
 
 
@@ -76,5 +87,6 @@ maptiler =
 # console.log maptiler.metersToLatLon -13692297.367572648, 6800125.454397306
 # console.log maptiler.metersToTile -13692297.367572648, 6800125.454397306, 15
 # console.log maptiler.zoomForPixelSize 4
-maptiler.quadTree(1,1,7)
+# maptiler.quadTree(1,1,7)
 # console.log 0 to 30
+bnd = [[177.13846,-38.03898],[177.26629,-37.99240]]
