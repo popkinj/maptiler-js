@@ -65,7 +65,7 @@ maptiler =
       if size > @resolution(i) and i is not 0 then return i-1
 
   # Convert TMS tile scheme to Gooogle's
-  googleTile: (x,y,z) -> [x,(Math.pow(2,z) - y)]
+  googleTile: (x,y,z) -> [x,((Math.pow(2,z) - 1) - y)]
 
   quadTree: (x,y,z) ->
     y = (Math.pow(2,z) - 1) - y
@@ -89,11 +89,17 @@ maptiler =
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
     # console.log tilePos2
 
+    tiles = []
     for ty from tilePos1[1] to tilePos2[1]
       for tx from tilePos1[0] to tilePos2[0]
-        console.log "#zoom/#tx/#ty"
+        google = @googleTile(tx,ty,zoom)
+        tiles.push {
+          tms: [zoom,tx,ty]
+          google: [zoom,tx,google[1]]
+        }
     # console.log "done"
     #   console.log ty
+    console.log tiles
 
 
 
