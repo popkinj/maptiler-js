@@ -19,7 +19,7 @@ maptiler =
         2 * Math.atan( Math.exp( lat * Math.PI / 180.0)) -
         Math.PI / 2.0
       )
-    [lat, lon]
+    [lon, lat]
 
   # res: -> 180 / @tileSize / Math.pow(2,it) # Don't know why this is here.
   res: -> @initialResolution / Math.pow(2,it)
@@ -33,9 +33,6 @@ maptiler =
   metersToPixels: (x,y,z) ->
     px = (x + @originShift) / @res(z)
     py = (y + @originShift) / @res(z)
-    # console.log "px: #px  py: #py"
-    # console.log "z: #z"
-    # console.log "@res: #{@res(z)}"
     [
       (x + @originShift) / @res(z)
       (y + @originShift) / @res(z)
@@ -85,42 +82,38 @@ maptiler =
 
   getTiles: (left,bottom,right,top,zoom) ->
     mercPos1 = @latLonToMeters left,bottom
-    # console.log "mx #{mercPos1[0]}"
-    # console.log "my #{mercPos1[1]}"
-    # console.log mercPos1
     mercPos2 = @latLonToMeters right,top
-    # console.log mercPos2
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
-    # console.log tilePos1
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
-    # console.log tilePos2
 
     tiles = []
     for ty from tilePos1[1] to tilePos2[1]
       for tx from tilePos1[0] to tilePos2[0]
         google = @googleTile(tx,ty,zoom)
-        bounds4326 = @tileLatLonBounds( tx, ty, zoom)
+        bounds3857 = @tileBounds(tx,ty,zoom)
+        bounds4326 = @tileLatLonBounds(tx,ty,zoom)
         tiles.push {
           tms: [zoom,tx,ty]
           google: [zoom,tx,google[1]]
-          extent3857:[]
+          extent3857:bounds3857
           extent4326:bounds4326
         }
-    # console.log "done"
-    #   console.log ty
-    console.log tiles
+    # console.log tiles
 
 
 
-# Should equal -13692297.3675727 6800125.45439731. Taken from testing postgis
-# console.log maptiler.latLonToMeters -123, 52
+
+### Testing
+# This is the bottom of the Bay of Plenty in New Zealand
+# b = [[177.13846,-38.03898],[177.26629,-37.99240]]
+# maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
+# Should spit out the following
+# [0:
+#   extent3857: [19714638.33531266, -4588667.6820157, 19724422.274933163, -4578883.742395198],
+#   extent4326: [177.09960937500003, -38.06539235133247, 177.1875, -37.996162679728116],
+#   google: [12, 4063, 2516],
+#   tms: [12, 4063, 1579]]
+# 1: ...
+# 2: ...
+# 3: ...
 #
-# console.log maptiler.metersToLatLon -13692297.367572648, 6800125.454397306
-# console.log maptiler.metersToTile -13692297.367572648, 6800125.454397306, 15
-# console.log maptiler.zoomForPixelSize 4
-# maptiler.quadTree(1,1,7)
-# console.log 0 to 30
-
-# This is the bottom of the Bay of Plenty
-b = [[177.13846,-38.03898],[177.26629,-37.99240]]
-maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
