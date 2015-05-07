@@ -26,8 +26,8 @@ maptiler =
 
   pixelsToMeters: (x,y,z) ->
     [
-      (px * @res(z) - @originShift)
-      (py * @res(z) - @originShift)
+      (x * @res(z) - @originShift)
+      (y * @res(z) - @originShift)
     ]
 
   metersToPixels: (x,y,z) ->
@@ -57,6 +57,12 @@ maptiler =
     min = @pixelsToMeters x * @tileSize, y * @tileSize, z
     max = @pixelsToMeters (x + 1) * @tileSize, (y + 1) * @tileSize, z
     [min[0],min[1],max[0],max[1]]
+
+  tileLatLonBounds: (x,y,z) ->
+    bounds = @tileBounds x,y,z
+    min = @metersToLatLon bounds[0], bounds[1]
+    max = @metersToLatLon bounds[2], bounds[3]
+    min ++ max
 
   resolution: (z) -> @initialResolution / Math.pow(2,z)
 
@@ -93,9 +99,12 @@ maptiler =
     for ty from tilePos1[1] to tilePos2[1]
       for tx from tilePos1[0] to tilePos2[0]
         google = @googleTile(tx,ty,zoom)
+        bounds4326 = @tileLatLonBounds( tx, ty, zoom)
         tiles.push {
           tms: [zoom,tx,ty]
           google: [zoom,tx,google[1]]
+          extent3857:[]
+          extent4326:bounds4326
         }
     # console.log "done"
     #   console.log ty
