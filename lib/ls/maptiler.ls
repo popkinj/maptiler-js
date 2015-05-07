@@ -49,6 +49,6 @@ maptiler =
 
 
 
-# console.log maptiler.latLonToMeters -123, 52
-# console.log maptiler.metersToLatLon -13692297.367572648, 6800125.454397306
+console.log maptiler.latLonToMeters -123, 52
+console.log maptiler.metersToLatLon -13692297.367572648, 6800125.454397306
 console.log maptiler.metersToTile -13692297.367572648, 6800125.454397306, 15
