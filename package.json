@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@littleearth.ca:maptiler-js"
+    "url": "https://github.com/popkinj/maptiler-js.git"
   },
   "author": "Jamie Popkin",
   "license": "ISC",
