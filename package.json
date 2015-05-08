@@ -1,5 +1,5 @@
 {
-  "name": "mapTiler-js",
+  "name": "maptiler-js",
   "version": "1.0.0",
   "description": "Calculate tiles required for a web map.",
   "main": "maptiler.js",
