@@ -1,4 +1,4 @@
-# maptilerJS
+# maptiler-js
 Calculate tiles required for a given geographic extent. The coordinates are based on Global Mercator *EPSG:3857* and made to work with existing web mapping libraries like [Openlayers](http://openlayers.org/), [Leaflet](http://leafletjs.com/), [MapboxGL](https://www.mapbox.com/blog/mapbox-gl-js/), [d3](http://d3js.org/) etc..
 
 Pass a geographic extent and zoom level (0-30). Coordinates passed to the function must be Latitutdes and Longitudes.

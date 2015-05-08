@@ -1,5 +1,5 @@
 {
-  "name": "mapTilerJS",
+  "name": "mapTiler-js",
   "version": "1.0.0",
   "description": "Calculate tiles required for a web map.",
   "main": "maptiler.js",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@littleearth.ca:maptilerJS"
+    "url": "git@littleearth.ca:maptiler-js"
   },
   "author": "Jamie Popkin",
   "license": "ISC",
