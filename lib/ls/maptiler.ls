@@ -100,6 +100,9 @@ maptiler =
         }
     # console.log tiles
 
+# Export as a module if in node/io
+module.exports = maptiler if module?.exports?
+
 
 
 

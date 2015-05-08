@@ -1,4 +1,6 @@
 -- This is just to get accurate values for gauging our test scripts
+-- Executed in PostGIS... But spatialite or Oracle spatial would
+-- probably work too.
 
 -- Get correct Global Mercator coordinates
 select
