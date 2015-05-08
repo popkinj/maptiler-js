@@ -86,7 +86,7 @@ maptiler = {
     return digit;
   },
   getTiles: function(left, bottom, right, top, zoom){
-    var mercPos1, mercPos2, tilePos1, tilePos2, tiles, i$, to$, ty, lresult$, j$, to1$, tx, google, bounds3857, bounds4326, results$ = [];
+    var mercPos1, mercPos2, tilePos1, tilePos2, tiles, i$, to$, ty, j$, to1$, tx, google, bounds3857, bounds4326;
     mercPos1 = this.latLonToMeters(left, bottom);
     mercPos2 = this.latLonToMeters(right, top);
     tilePos1 = this.metersToTile(mercPos1[0], mercPos1[1], zoom);
@@ -94,22 +94,20 @@ maptiler = {
     tiles = [];
     for (i$ = tilePos1[1], to$ = tilePos2[1]; i$ <= to$; ++i$) {
       ty = i$;
-      lresult$ = [];
       for (j$ = tilePos1[0], to1$ = tilePos2[0]; j$ <= to1$; ++j$) {
         tx = j$;
         google = this.googleTile(tx, ty, zoom);
         bounds3857 = this.tileBounds(tx, ty, zoom);
         bounds4326 = this.tileLatLonBounds(tx, ty, zoom);
-        lresult$.push(tiles.push({
+        tiles.push({
           tms: [zoom, tx, ty],
           google: [zoom, tx, google[1]],
           extent3857: bounds3857,
           extent4326: bounds4326
-        }));
+        });
       }
-      results$.push(lresult$);
     }
-    return results$;
+    return tiles;
   }
 };
 if ((typeof module != 'undefined' && module !== null ? module.exports : void 8) != null) {

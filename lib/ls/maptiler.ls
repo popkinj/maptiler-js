@@ -98,7 +98,7 @@ maptiler =
           extent3857:bounds3857
           extent4326:bounds4326
         }
-    # console.log tiles
+    tiles
 
 # Export as a module if in node/io
 module.exports = maptiler if module?.exports?
@@ -109,7 +109,8 @@ module.exports = maptiler if module?.exports?
 ### Testing
 # This is the bottom of the Bay of Plenty in New Zealand
 # b = [[177.13846,-38.03898],[177.26629,-37.99240]]
-# maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
+# tiles = maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
+# console.log tiles
 # Should spit out the following
 # [0:
 #   extent3857: [19714638.33531266, -4588667.6820157, 19724422.274933163, -4578883.742395198],
