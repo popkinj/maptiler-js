@@ -7,7 +7,7 @@ var tiles = maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12)
 ```
 Think of extent as the *left*, *bottom*, *right* and *top* sides of a box.
 
-An object is returned representing an array of all tiles making up the extent at that particular zoom level. The extent arrays can be used to clip from the source dataset. The tms/google arrays are how you save the file within the directory structure... And how the files are located by most mapping frameworks.
+An object is returned representing an array of all tiles making up the extent at that particular zoom level. The extent arrays can be used to clip the source dataset. The tms/google arrays are how you save the file within the directory structure... And how the files are located by most mapping frameworks.
 ```javascript
 [0:
   extent3857: [19714638.33531266, -4588667.6820157, 19724422.274933163, -4578883.742395198],
