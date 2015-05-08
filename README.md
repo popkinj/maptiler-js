@@ -22,4 +22,4 @@ An object is returned representing an array of all tiles making up the extent at
 
 The rest is up to you. ☺
 
-This is a direct port of the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Made for use in node/io or the browser.
+This is a direct port of the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Adapted for node/io or the browser.
