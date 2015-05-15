@@ -1,4 +1,5 @@
 maptiler =
+  redis: no # Default to no Redis
   originShift: 2 * Math.PI * 6378137 / 2.0
   tileSize: 256
   initialResolution: 2 * Math.PI * 6378137 / 256
@@ -86,38 +87,36 @@ maptiler =
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
 
-    tiles = []
+    # Define the container for the tiles
+    if @redis
+      redis = require('redis').createClient!
+      redis.on 'error', -> Console.log "Error with Redis: #it"
+      redis.del 'maptiler' # Clear previous list
+    else
+      tiles = []
+
     for ty from tilePos1[1] to tilePos2[1]
       for tx from tilePos1[0] to tilePos2[0]
         google = @googleTile(tx,ty,zoom)
         bounds3857 = @tileBounds(tx,ty,zoom)
         bounds4326 = @tileLatLonBounds(tx,ty,zoom)
-        tiles.push {
+
+        meta = # Form the data package
           tms: [zoom,tx,ty]
           google: [zoom,tx,google[1]]
           extent3857:bounds3857
           extent4326:bounds4326
-        }
-    tiles
+
+        # If redis support is enabled push it there.
+        # Otherwise just put into the tiles array
+        if @redis then redis.rpush 'maptiler' meta else tiles.push meta
+
+    # Return redis key name or tile array
+    if @redis
+      redis.quit!
+      'maptiler'
+    else
+      tiles
 
 # Export as a module if in node/io
 module.exports = maptiler if module?.exports?
-
-
-
-
-### Testing
-# This is the bottom of the Bay of Plenty in New Zealand
-# b = [[177.13846,-38.03898],[177.26629,-37.99240]]
-# tiles = maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
-# console.log tiles
-# Should spit out the following
-# [0:
-#   extent3857: [19714638.33531266, -4588667.6820157, 19724422.274933163, -4578883.742395198],
-#   extent4326: [177.09960937500003, -38.06539235133247, 177.1875, -37.996162679728116],
-#   google: [12, 4063, 2516],
-#   tms: [12, 4063, 1579]]
-# 1: ...
-# 2: ...
-# 3: ...
-#

@@ -3,7 +3,7 @@ Calculate tiles required for a given geographic extent. The coordinates are base
 
 Pass a geographic extent and zoom level (0-30). Coordinates must be Latitudes and Longitudes.
 ```javascript
-var tiles = maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12)
+var tiles = maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12);
 ```
 Think of extent as the *left*, *bottom*, *right* and *top* sides of a box.
 
@@ -22,4 +22,16 @@ An object is returned representing an array of all tiles making up the extent at
 
 The rest is up to you. ☺
 
-This is a direct port of the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Adapted for node/io or the browser.
+## Redis Support
+Node/io has a hard limit for memory usage. Which can be exceeded when calculating millions of tiles. I personally found anything over 800,000 caused a core dump. This can be overcome by using a memory cache store like [Redis](http://redis.io/). Just make sure you have it installed. Along with a node client like [node-redis](https://github.com/mranney/node_redis).
+```javascript
+redis = require("redis");
+var tiles = maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12);
+
+redis.lpop(tiles, function (tile) {
+  console.log("Here is my first tile");
+});
+
+```
+
+Most logic was ported from the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Adapted for node/io or the browser. Redis functionality is limited to server side.

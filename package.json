@@ -1,6 +1,6 @@
 {
   "name": "maptiler-js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Calculate tiles required for a web map.",
   "main": "maptiler.js",
   "directories": {
@@ -23,5 +23,8 @@
     "gulp-livescript": "^2.3.0",
     "gulp-plumber": "^1.0.0",
     "gulp-watch": "^4.2.4"
+  },
+  "dependencies": {
+    "redis": "^0.12.1"
   }
 }
