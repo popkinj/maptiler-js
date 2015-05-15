@@ -1,6 +1,18 @@
 var maptiler;
 maptiler = {
-  redis: false,
+  redis: {
+    on: false,
+    turnOn: function(){
+      var redis;
+      redis = require('redis').createClient();
+      redis.del('maptiler');
+      redis.quit();
+      this.on = true;
+    },
+    turnOff: function(){
+      this.on = false;
+    }
+  },
   originShift: 2 * Math.PI * 6378137 / 2.0,
   tileSize: 256,
   initialResolution: 2 * Math.PI * 6378137 / 256,
@@ -92,12 +104,11 @@ maptiler = {
     mercPos2 = this.latLonToMeters(right, top);
     tilePos1 = this.metersToTile(mercPos1[0], mercPos1[1], zoom);
     tilePos2 = this.metersToTile(mercPos2[0], mercPos2[1], zoom);
-    if (this.redis) {
+    if (this.redis.on) {
       redis = require('redis').createClient();
       redis.on('error', function(it){
         return Console.log("Error with Redis: " + it);
       });
-      redis.del('maptiler');
     } else {
       tiles = [];
     }
@@ -114,14 +125,14 @@ maptiler = {
           extent3857: bounds3857,
           extent4326: bounds4326
         };
-        if (this.redis) {
+        if (this.redis.on) {
           redis.rpush('maptiler', meta);
         } else {
           tiles.push(meta);
         }
       }
     }
-    if (this.redis) {
+    if (this.redis.on) {
       redis.quit();
       return 'maptiler';
     } else {

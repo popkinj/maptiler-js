@@ -1,5 +1,12 @@
 maptiler =
-  redis: no # Default to no Redis
+  redis:
+    on: no # Default to no Redis
+    turnOn: !->
+      redis = require('redis').createClient!
+      redis.del 'maptiler' # Clear previous list
+      redis.quit!
+      @on = yes
+    turnOff: !-> @on = no
   originShift: 2 * Math.PI * 6378137 / 2.0
   tileSize: 256
   initialResolution: 2 * Math.PI * 6378137 / 256
@@ -88,10 +95,9 @@ maptiler =
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
 
     # Define the container for the tiles
-    if @redis
+    if @redis.on
       redis = require('redis').createClient!
       redis.on 'error', -> Console.log "Error with Redis: #it"
-      redis.del 'maptiler' # Clear previous list
     else
       tiles = []
 
@@ -109,10 +115,10 @@ maptiler =
 
         # If redis support is enabled push it there.
         # Otherwise just put into the tiles array
-        if @redis then redis.rpush 'maptiler' meta else tiles.push meta
+        if @redis.on then redis.rpush 'maptiler' meta else tiles.push meta
 
     # Return redis key name or tile array
-    if @redis
+    if @redis.on
       redis.quit!
       'maptiler'
     else
