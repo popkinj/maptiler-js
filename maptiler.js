@@ -1,5 +1,6 @@
 var maptiler;
 maptiler = {
+  redis: false,
   originShift: 2 * Math.PI * 6378137 / 2.0,
   tileSize: 256,
   initialResolution: 2 * Math.PI * 6378137 / 256,
@@ -86,12 +87,20 @@ maptiler = {
     return digit;
   },
   getTiles: function(left, bottom, right, top, zoom){
-    var mercPos1, mercPos2, tilePos1, tilePos2, tiles, i$, to$, ty, j$, to1$, tx, google, bounds3857, bounds4326;
+    var mercPos1, mercPos2, tilePos1, tilePos2, redis, tiles, i$, to$, ty, j$, to1$, tx, google, bounds3857, bounds4326, meta;
     mercPos1 = this.latLonToMeters(left, bottom);
     mercPos2 = this.latLonToMeters(right, top);
     tilePos1 = this.metersToTile(mercPos1[0], mercPos1[1], zoom);
     tilePos2 = this.metersToTile(mercPos2[0], mercPos2[1], zoom);
-    tiles = [];
+    if (this.redis) {
+      redis = require('redis').createClient();
+      redis.on('error', function(it){
+        return Console.log("Error with Redis: " + it);
+      });
+      redis.del('maptiler');
+    } else {
+      tiles = [];
+    }
     for (i$ = tilePos1[1], to$ = tilePos2[1]; i$ <= to$; ++i$) {
       ty = i$;
       for (j$ = tilePos1[0], to1$ = tilePos2[0]; j$ <= to1$; ++j$) {
@@ -99,15 +108,25 @@ maptiler = {
         google = this.googleTile(tx, ty, zoom);
         bounds3857 = this.tileBounds(tx, ty, zoom);
         bounds4326 = this.tileLatLonBounds(tx, ty, zoom);
-        tiles.push({
+        meta = {
           tms: [zoom, tx, ty],
           google: [zoom, tx, google[1]],
           extent3857: bounds3857,
           extent4326: bounds4326
-        });
+        };
+        if (this.redis) {
+          redis.rpush('maptiler', meta);
+        } else {
+          tiles.push(meta);
+        }
       }
     }
-    return tiles;
+    if (this.redis) {
+      redis.quit();
+      return 'maptiler';
+    } else {
+      return tiles;
+    }
   }
 };
 if ((typeof module != 'undefined' && module !== null ? module.exports : void 8) != null) {
