@@ -129,7 +129,7 @@ maptiler = {
         extent4326: bounds4326
       };
       if (this$.redis.on) {
-        return redis.rpush('maptiler', meta, function(){
+        return redis.rpush('maptiler', JSON.stringify(meta), function(){
           ++tx;
           return callbackX(null);
         });
