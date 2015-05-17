@@ -118,7 +118,7 @@ maptiler =
       # If redis support is enabled push it there.
       # Otherwise just put into the tiles array
       if @redis.on
-        redis.rpush('maptiler', meta, ->
+        redis.rpush('maptiler', JSON.stringify(meta), ->
           # console.log "tx: #tx/#{tilePos2[0]} ty: #ty/#{tilePos2[1]}"
           ++tx # Move to the next cell over
           callbackX null
