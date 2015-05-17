@@ -98,8 +98,9 @@ maptiler = {
     }
     return digit;
   },
-  getTiles: function(left, bottom, right, top, zoom){
-    var mercPos1, mercPos2, tilePos1, tilePos2, redis, tiles, i$, to$, ty, j$, to1$, tx, google, bounds3857, bounds4326, meta;
+  getTiles: function(left, bottom, right, top, zoom, tileCallback){
+    var async, mercPos1, mercPos2, tilePos1, tilePos2, redis, tiles, tx, testX, addTile, ty, testY, doRow, done, this$ = this;
+    async = require('async');
     mercPos1 = this.latLonToMeters(left, bottom);
     mercPos2 = this.latLonToMeters(right, top);
     tilePos1 = this.metersToTile(mercPos1[0], mercPos1[1], zoom);
@@ -112,32 +113,52 @@ maptiler = {
     } else {
       tiles = [];
     }
-    for (i$ = tilePos1[1], to$ = tilePos2[1]; i$ <= to$; ++i$) {
-      ty = i$;
-      for (j$ = tilePos1[0], to1$ = tilePos2[0]; j$ <= to1$; ++j$) {
-        tx = j$;
-        google = this.googleTile(tx, ty, zoom);
-        bounds3857 = this.tileBounds(tx, ty, zoom);
-        bounds4326 = this.tileLatLonBounds(tx, ty, zoom);
-        meta = {
-          tms: [zoom, tx, ty],
-          google: [zoom, tx, google[1]],
-          extent3857: bounds3857,
-          extent4326: bounds4326
-        };
-        if (this.redis.on) {
-          redis.rpush('maptiler', meta);
-        } else {
-          tiles.push(meta);
-        }
+    tx = tilePos1[0];
+    testX = function(){
+      return tx > tilePos2[0];
+    };
+    addTile = function(callbackX){
+      var google, bounds3857, bounds4326, meta;
+      google = this$.googleTile(tx, ty, zoom);
+      bounds3857 = this$.tileBounds(tx, ty, zoom);
+      bounds4326 = this$.tileLatLonBounds(tx, ty, zoom);
+      meta = {
+        tms: [zoom, tx, ty],
+        google: [zoom, tx, google[1]],
+        extent3857: bounds3857,
+        extent4326: bounds4326
+      };
+      if (this$.redis.on) {
+        return redis.rpush('maptiler', meta, function(){
+          ++tx;
+          return callbackX(null);
+        });
+      } else {
+        tiles.push(meta);
+        ++tx;
+        return setTimeout(callbackX, 1);
       }
-    }
-    if (this.redis.on) {
-      redis.quit();
-      return 'maptiler';
-    } else {
-      return tiles;
-    }
+    };
+    ty = tilePos1[1];
+    testY = function(){
+      return ty > tilePos2[1];
+    };
+    doRow = function(callbackY){
+      async.until(testX, addTile, function(){
+        ty++;
+        tx = tilePos1[0];
+        return callbackY(null);
+      });
+    };
+    done = function(){
+      if (this$.redis.on) {
+        redis.quit();
+        tileCallback('maptiler');
+      } else {
+        tileCallback(tiles);
+      }
+    };
+    return async.until(testY, doRow, done);
   }
 };
 if ((typeof module != 'undefined' && module !== null ? module.exports : void 8) != null) {
