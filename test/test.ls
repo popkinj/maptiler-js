@@ -1,8 +1,14 @@
 maptiler = require "../dist/maptiler.js"
+# Bottom of bay of plenty
 b = [[177.13846,-38.03898],[177.26629,-37.99240]]
-maptiler.redis = yes
-tiles = maptiler.getTiles b[0][0], b[0][1], b[1][0], b[1][1], 12
-console.log tiles
+# All of New Zealand
+l = 166.425173
+b = -47.290030
+r = 178.578173
+t = -34.129501
+maptiler.redis.turnOn!
+callback = -> console.log it
+tiles = maptiler.getTiles l,b,r,t,12,callback
 #
 # If not useing redis... The following should be producced
 # on standard output.

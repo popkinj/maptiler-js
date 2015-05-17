@@ -88,7 +88,8 @@ maptiler =
       digit += 2 if y is not 0 and y is not 0
     digit
 
-  getTiles: (left,bottom,right,top,zoom) ->
+  getTiles: (left,bottom,right,top,zoom,tileCallback) ->
+    require! <[ async ]>
     mercPos1 = @latLonToMeters left,bottom
     mercPos2 = @latLonToMeters right,top
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
@@ -101,28 +102,56 @@ maptiler =
     else
       tiles = []
 
-    for ty from tilePos1[1] to tilePos2[1]
-      for tx from tilePos1[0] to tilePos2[0]
-        google = @googleTile(tx,ty,zoom)
-        bounds3857 = @tileBounds(tx,ty,zoom)
-        bounds4326 = @tileLatLonBounds(tx,ty,zoom)
+    tx = tilePos1[0]
+    testX = ->
+      tx > tilePos2[0]
+    addTile = (callbackX) ~>
+      google = @googleTile(tx,ty,zoom)
+      bounds3857 = @tileBounds(tx,ty,zoom)
+      bounds4326 = @tileLatLonBounds(tx,ty,zoom)
 
-        meta = # Form the data package
-          tms: [zoom,tx,ty]
-          google: [zoom,tx,google[1]]
-          extent3857:bounds3857
-          extent4326:bounds4326
+      meta = # Form the data package
+        tms: [zoom,tx,ty]
+        google: [zoom,tx,google[1]]
+        extent3857:bounds3857
+        extent4326:bounds4326
 
-        # If redis support is enabled push it there.
-        # Otherwise just put into the tiles array
-        if @redis.on then redis.rpush 'maptiler' meta else tiles.push meta
+      # If redis support is enabled push it there.
+      # Otherwise just put into the tiles array
+      if @redis.on
+        redis.rpush('maptiler', meta, ->
+          # console.log "tx: #tx/#{tilePos2[0]} ty: #ty/#{tilePos2[1]}"
+          ++tx # Move to the next cell over
+          callbackX null
+        )
+      else
+        tiles.push meta
+        ++tx # Move to the next cell over
+        callbackX null
 
-    # Return redis key name or tile array
-    if @redis.on
-      redis.quit!
-      'maptiler'
-    else
-      tiles
+    ty = tilePos1[1]
+
+    testY = -> ty > tilePos2[1]
+    nextY = !->
+      ty++
+      setTimeout it,1 # Just so we don't get a stack overflow
+
+    doRow = (callbackY) !->
+      async.until(testX, addTile, ->
+        ty++ # Increment y
+        tx := tilePos1[0] # Reset X
+        callbackY null
+      )
+
+    done = !~>
+      if @redis.on
+        redis.quit!
+        tileCallback 'maptiler'
+      else
+        tileCallback tiles
+
+    async.until testY, doRow, done
+
 
 # Export as a module if in node/io
 module.exports = maptiler if module?.exports?

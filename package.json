@@ -25,6 +25,7 @@
     "gulp-watch": "^4.2.4"
   },
   "dependencies": {
+    "async": "^0.9.0",
     "redis": "^0.12.1"
   }
 }
