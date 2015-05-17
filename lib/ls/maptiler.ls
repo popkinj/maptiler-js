@@ -102,10 +102,9 @@ maptiler =
     else
       tiles = []
 
-    tx = tilePos1[0]
-    testX = ->
-      tx > tilePos2[0]
-    addTile = (callbackX) ~>
+    tx = tilePos1[0] # First column
+    testX = -> tx > tilePos2[0] # True if on last column
+    addTile = (callbackX) ~> # Calculate tile and add to array/Redis
       google = @googleTile(tx,ty,zoom)
       bounds3857 = @tileBounds(tx,ty,zoom)
       bounds4326 = @tileLatLonBounds(tx,ty,zoom)
@@ -127,22 +126,20 @@ maptiler =
       else
         tiles.push meta
         ++tx # Move to the next cell over
-        callbackX null
+        setTimeout callbackX,1 # Just so we don't get a stack overflow
 
-    ty = tilePos1[1]
+    ty = tilePos1[1] # First row
+    testY = -> ty > tilePos2[1] # Positive if on last row
 
-    testY = -> ty > tilePos2[1]
-    nextY = !->
-      ty++
-      setTimeout it,1 # Just so we don't get a stack overflow
-
+    # Run through each tile on the X axis and add to array or Redis
     doRow = (callbackY) !->
-      async.until(testX, addTile, ->
+      async.until(testX, addTile, -> # For each column
         ty++ # Increment y
         tx := tilePos1[0] # Reset X
-        callbackY null
+        callbackY null # pass back so we can do the next row
       )
 
+    # Done all rows and columns
     done = !~>
       if @redis.on
         redis.quit!
@@ -150,8 +147,7 @@ maptiler =
       else
         tileCallback tiles
 
-    async.until testY, doRow, done
-
+    async.until testY, doRow, done # for each row
 
 # Export as a module if in node/io
 module.exports = maptiler if module?.exports?

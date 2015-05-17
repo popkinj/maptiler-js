@@ -8,7 +8,7 @@ r = 178.578173
 t = -34.129501
 maptiler.redis.turnOn!
 callback = -> console.log it
-tiles = maptiler.getTiles l,b,r,t,12,callback
+maptiler.getTiles l,b,r,t,16,callback
 #
 # If not useing redis... The following should be producced
 # on standard output.
