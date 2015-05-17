@@ -1,6 +1,6 @@
 {
   "name": "maptiler-js",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Calculate tiles required for a web map.",
   "main": "maptiler.js",
   "directories": {

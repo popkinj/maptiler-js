@@ -26,12 +26,27 @@ The rest is up to you. ☺
 Node/io has a hard limit for memory usage. Which can be exceeded when calculating millions of tiles. I personally found anything over 800,000 caused a core dump. This can be overcome by using a memory cache store like [Redis](http://redis.io/). Just make sure you have it installed. Along with a node client like [node-redis](https://github.com/mranney/node_redis).
 ```javascript
 redis = require("redis");
-var tiles = maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12);
+maptiler = require("maptiler-js");
 
-redis.lpop(tiles, function (tile) {
-  console.log("Here is my first tile");
-});
+maptiler.redis.turnOn(); // Use Redis
 
+printFirstTile = function (tiles) {
+  redis.lpop(tiles, function (tile) {
+    console.log(tile);
+  });
+}
+The variable *tiles* is just the object store name in Redis that was allocated by maptiler.
+
+maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12,printFirstTile);
+```
+
+Or if you have a small amout of tiles you can allow them to be stored in a regular javascript array.
+```javascript
+printFirstTile = function (tiles) {
+  console.log(tiles);
+}
+
+maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12,printAllTile);
 ```
 
 Most logic was ported from the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Adapted for node/io or the browser. Redis functionality is limited to server side.
