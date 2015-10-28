@@ -42,11 +42,11 @@ maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12,printFirstTile);
 
 Or if you have a small amout of tiles you can allow them to be stored in a regular javascript array.
 ```javascript
-printFirstTile = function (tiles) {
+printAllTiles = function (tiles) {
   console.log(tiles);
 }
 
-maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12,printAllTile);
+maptiler.getTiles(177.13846,-38.03898,177.26629,-37.99240,12,printAllTiles);
 ```
 
 Most logic was ported from the [maptiler](http://www.maptiler.org/google-maps-coordinates-tile-bounds-projection/) python module. Adapted for node/io or the browser. Redis functionality is limited to server side.

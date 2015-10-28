@@ -92,6 +92,7 @@ maptiler =
     require! <[ async ]>
     mercPos1 = @latLonToMeters left,bottom
     mercPos2 = @latLonToMeters right,top
+    westHem = if mercPos1[0] < 0 then yes else no # Hemisphere flag
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
 
@@ -103,7 +104,11 @@ maptiler =
       tiles = []
 
     tx = tilePos1[0] # First column
-    testX = -> tx > tilePos2[0] # True if on last column
+
+    # Test if the x is in our bounds
+    # Treatment depends on hemisphere
+    testX = -> if westHem then tx < tilePos2[0] else tx > tilePos2[0]
+
     addTile = (callbackX) ~> # Calculate tile and add to array/Redis
       google = @googleTile(tx,ty,zoom)
       bounds3857 = @tileBounds(tx,ty,zoom)
@@ -120,12 +125,12 @@ maptiler =
       if @redis.on
         redis.rpush('maptiler', JSON.stringify(meta), ->
           # console.log "tx: #tx/#{tilePos2[0]} ty: #ty/#{tilePos2[1]}"
-          ++tx # Move to the next cell over
+          if westHem then --tx else ++tx # Move to the next cell over
           callbackX null
         )
       else
         tiles.push meta
-        ++tx # Move to the next cell over
+        if westHem then --tx else ++tx # Move to the next cell over
         setTimeout callbackX,1 # Just so we don't get a stack overflow
 
     ty = tilePos1[1] # First row
