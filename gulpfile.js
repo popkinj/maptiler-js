@@ -15,7 +15,7 @@ gulp.task("default", function () {
     return gulp.src('lib/ls/maptiler.ls').
       pipe(plumber()).
       pipe(livescript({bare: true})).
-      pipe(gulp.dest("dist/")).
+      pipe(gulp.dest("./")).
       pipe(livereload());
   });
 });
