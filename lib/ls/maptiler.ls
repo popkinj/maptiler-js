@@ -107,7 +107,7 @@ maptiler =
 
     # Test if the x is in our bounds
     # Treatment depends on hemisphere
-    testX = -> if westHem then tx < tilePos2[0] else tx > tilePos2[0]
+    testX = -> if westHem then tx < tilePos1[0] else tx > tilePos2[0]
 
     addTile = (callbackX) ~> # Calculate tile and add to array/Redis
       google = @googleTile(tx,ty,zoom)

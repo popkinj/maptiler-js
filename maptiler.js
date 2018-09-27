@@ -117,7 +117,7 @@ maptiler = {
     tx = tilePos1[0];
     testX = function(){
       if (westHem) {
-        return tx < tilePos2[0];
+        return tx < tilePos1[0];
       } else {
         return tx > tilePos2[0];
       }
