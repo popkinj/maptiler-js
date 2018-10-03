@@ -93,6 +93,7 @@ maptiler =
     mercPos1 = @latLonToMeters left,bottom
     mercPos2 = @latLonToMeters right,top
     westHem = if mercPos1[0] < 0 then yes else no # Hemisphere flag
+    northHem = if mercPos1[1] > 0 then yes else no # Hemisphere flag
     tilePos1 = @metersToTile mercPos1[0], mercPos1[1], zoom
     tilePos2 = @metersToTile mercPos2[0], mercPos2[1], zoom
 
@@ -104,10 +105,10 @@ maptiler =
       tiles = []
 
     tx = tilePos1[0] # First column
+    ty = tilePos1[1] # First row
 
-    # Test if the x is in our bounds
-    # Treatment depends on hemisphere
-    testX = -> if westHem then tx < tilePos1[0] else tx > tilePos2[0]
+    testX = -> tx > tilePos2[0]
+    testY = -> ty > tilePos2[1]
 
     addTile = (callbackX) ~> # Calculate tile and add to array/Redis
       google = @googleTile(tx,ty,zoom)
@@ -120,12 +121,12 @@ maptiler =
         extent3857:bounds3857
         extent4326:bounds4326
 
+
       # If redis support is enabled push it there.
       # Otherwise just put into the tiles array
       if @redis.on
         redis.rpush('maptiler', JSON.stringify(meta), ->
-          # console.log "tx: #tx/#{tilePos2[0]} ty: #ty/#{tilePos2[1]}"
-          if westHem then --tx else ++tx # Move to the next cell over
+          ++tx # Move to the next cell over
           callbackX null
         )
       else
@@ -133,14 +134,13 @@ maptiler =
         if westHem then --tx else ++tx # Move to the next cell over
         setTimeout callbackX,1 # Just so we don't get a stack overflow
 
-    ty = tilePos1[1] # First row
-    testY = -> ty > tilePos2[1] # Positive if on last row
 
     # Run through each tile on the X axis and add to array or Redis
     doRow = (callbackY) !->
       async.until(testX, addTile, -> # For each column
         ty++ # Increment y
         tx := tilePos1[0] # Reset X
+
         callbackY null # pass back so we can do the next row
       )
 

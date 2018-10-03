@@ -99,11 +99,12 @@ maptiler = {
     return digit;
   },
   getTiles: function(left, bottom, right, top, zoom, tileCallback){
-    var async, mercPos1, mercPos2, westHem, tilePos1, tilePos2, redis, tiles, tx, testX, addTile, ty, testY, doRow, done, this$ = this;
+    var async, mercPos1, mercPos2, westHem, northHem, tilePos1, tilePos2, redis, tiles, tx, ty, testX, testY, addTile, doRow, done, this$ = this;
     async = require('async');
     mercPos1 = this.latLonToMeters(left, bottom);
     mercPos2 = this.latLonToMeters(right, top);
     westHem = mercPos1[0] < 0 ? true : false;
+    northHem = mercPos1[1] > 0 ? true : false;
     tilePos1 = this.metersToTile(mercPos1[0], mercPos1[1], zoom);
     tilePos2 = this.metersToTile(mercPos2[0], mercPos2[1], zoom);
     if (this.redis.on) {
@@ -115,12 +116,12 @@ maptiler = {
       tiles = [];
     }
     tx = tilePos1[0];
+    ty = tilePos1[1];
     testX = function(){
-      if (westHem) {
-        return tx < tilePos1[0];
-      } else {
-        return tx > tilePos2[0];
-      }
+      return tx > tilePos2[0];
+    };
+    testY = function(){
+      return ty > tilePos2[1];
     };
     addTile = function(callbackX){
       var google, bounds3857, bounds4326, meta;
@@ -135,11 +136,7 @@ maptiler = {
       };
       if (this$.redis.on) {
         return redis.rpush('maptiler', JSON.stringify(meta), function(){
-          if (westHem) {
-            --tx;
-          } else {
-            ++tx;
-          }
+          ++tx;
           return callbackX(null);
         });
       } else {
@@ -151,10 +148,6 @@ maptiler = {
         }
         return setTimeout(callbackX, 1);
       }
-    };
-    ty = tilePos1[1];
-    testY = function(){
-      return ty > tilePos2[1];
     };
     doRow = function(callbackY){
       async.until(testX, addTile, function(){

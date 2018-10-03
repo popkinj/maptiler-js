@@ -2,16 +2,23 @@ maptiler = require "../maptiler.js"
 # Bottom of bay of plenty
 # b = [[177.13846,-38.03898],[177.26629,-37.99240]]
 # All of New Zealand
-l = 166.425173
-b = -47.290030
-r = 178.578173
-t = -34.129501
+# l = 166.425173
+# b = -47.290030
+# r = 178.578173
+# t = -34.129501
 
 # Sample BC area
 # l = -126.68540
 # b = 50.25397
 # r = -126.18878
 # t = 50.48561
+
+# BC extent
+l = -132.98657
+b = 48.36624
+r = -113.99665
+t = 58.38708
+
 
 maptiler.redis.turnOn!
 callback = -> console.log it
